@@ -161,7 +161,7 @@ void button_check(void){
 }
 float mesure_distance(void)
 {
-
+    // EZIO --> ultrasons  ==> j'ai déjà commencé mais ça donne pas grand chose
     /* 1. Lance une mesure de distance en envoyant une impulsion HIGH de 10µs sur la broche TRIGGER */
     /*digitalWrite(TRIGGER_PIN, HIGH);
     delayMicroseconds(10);
