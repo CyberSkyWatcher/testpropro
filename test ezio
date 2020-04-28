@@ -1,0 +1,57 @@
+/*
+ * Project name:  External Interrupt
+ * Copyright:
+     (c) www.studentcompanion.net, 2017.
+ * Test configuration:
+     MCU:             PIC18F45K22
+                      http://ww1.microchip.com/downloads/en/DeviceDoc/41412D.pdf
+     Oscillator:      HS-PLL, 8.00000 MHz
+ */
+
+//variables declaration
+bit flag;
+int x;
+
+//Interrupt Service Routine Code
+void Blink_Interrupt()
+{
+for (x=1; x <=5; x++) //Loop 5 times
+    {
+    LATB.F5 =1;      //Switch ON Red LED
+    Delay_ms(200);   //200ms delay
+    LATB.F5 =0;      //Switch OFF Red LED
+    Delay_ms(200);   //200ms delay
+    }
+}
+
+//Interrupt
+void interrupt()
+{
+if (INT0F_bit==1) //Check for Interrup Flag bit
+   {
+   flag =1;       //Set local Interrupr flag
+   INT0F_bit=0;   // Clear Interrupt Flag
+   }
+}
+
+void main() {
+ANSELB = 0;        // Configure PORTB as digital I/O
+TRISB = 0x01;      //PORTB pin 0 input and rest outputs
+
+flag =0;
+INTEDG0_bit = 1;   // Set Interrupt on rising edge
+INT0IF_bit  = 0;   // Clear INT0 flag
+INT0IE_bit  = 1;   //Enable INT0 interrupt
+GIE_bit     = 1;// Enable GLOBAL Interrupts
+
+while (1) {           // endless loop
+LATB.F4 = ~ LATB.F4;  //ON and OFF RB5. Green LED
+Delay_ms(1000);       //1s delay
+
+if (flag)//Check if there is an interrupt call
+   {
+   Blink_Interrupt();//Jump to ISR code
+   flag = 0;
+   }
+}
+}
