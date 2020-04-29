@@ -1,7 +1,6 @@
 //
 // Created by juanf on 4/29/2020.
 //
-
 #define EEPROM_WR 0xA0
 #define EEPROM_RD 0xA1
 
@@ -127,7 +126,6 @@ unsigned short Reglage_dist(void){
             sprinti(bufferLCD,"CONSIGNE:%02d", distance);
             Lcd_Out(4,1,bufferLCD);
             Lcd_Out_CP("m");
-            run_flag = 1;
             reglage_flag=0;
             buttonstate = 0;
         }
@@ -143,8 +141,12 @@ void button_check(void){
     if (buttonstate && Button(&PORTD, 0, 1, 0)) {
         Lcd_Cmd(_LCD_CLEAR);
         Lcd_Cmd(_LCD_CURSOR_OFF);
-        //Lcd_Out(2,10,statut_Sart);
+        memset(bufferLCD,0,sizeof(bufferLCD));
+        sprinti(bufferLCD,"CONSIGNE:%02d", consigne);
+        Lcd_Out(4,1,bufferLCD);
+        Lcd_Out_CP("m");
         run_flag = 1;
+        reglage_flag=0;
         buttonstate = 0;
     }
 
@@ -159,9 +161,9 @@ void button_check(void){
         buttonstate1 = 0;
     }
 }
-float mesure_distance(void)
+int mesure_distance(void)
 {
-    // EZIO --> ultrasons  ==> j'ai déjà commencé mais ça donne pas grand chose
+
     /* 1. Lance une mesure de distance en envoyant une impulsion HIGH de 10µs sur la broche TRIGGER */
     /*digitalWrite(TRIGGER_PIN, HIGH);
     delayMicroseconds(10);
@@ -226,7 +228,11 @@ void main()
     {
         button_check();
         if(run_flag){
-
+            /* Tant que ça tourne affiche le statut sur le lcd + distance */
+            Lcd_Out(1,1,"RUNNING");
+        }
+        else{
+            Lcd_Out(1,1,"STAND BY");
         }
         /*memset(bufferLCD,0,sizeof(bufferLCD));
          sprinti(bufferLCD,"%02d", consigne);
